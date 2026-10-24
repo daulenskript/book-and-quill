@@ -6,24 +6,20 @@ enum PixelArt {
     static func image(_ rows: [String], palette: [Character: NSColor], scale: Int) -> NSImage {
         let height = rows.count
         let width = rows.map(\.count).max() ?? 0
-        let rep = NSBitmapImageRep(
-            bitmapDataPlanes: nil, pixelsWide: width * scale, pixelsHigh: height * scale,
-            bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
-            colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
+        let ctx = CGContext(
+            data: nil, width: width * scale, height: height * scale, bitsPerComponent: 8, bytesPerRow: 0,
+            space: CGColorSpace(name: CGColorSpace.sRGB)!,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
         )!
         for (y, row) in rows.enumerated() {
             for (x, ch) in row.enumerated() {
-                guard let color = palette[ch]?.usingColorSpace(.deviceRGB) else { continue }
-                for dy in 0..<scale {
-                    for dx in 0..<scale {
-                        rep.setColor(color, atX: x * scale + dx, y: y * scale + dy)
-                    }
-                }
+                guard let color = palette[ch] else { continue }
+                ctx.setFillColor(color.cgColor)
+                // CoreGraphics' origin is bottom-left; rows are written top-down.
+                ctx.fill(CGRect(x: x * scale, y: (height - 1 - y) * scale, width: scale, height: scale))
             }
         }
-        let image = NSImage(size: NSSize(width: width * scale, height: height * scale))
-        image.addRepresentation(rep)
-        return image
+        return NSImage(cgImage: ctx.makeImage()!, size: NSSize(width: width * scale, height: height * scale))
     }
 
     /// Image from a per-pixel colour function (used for the procedural dirt tile).
