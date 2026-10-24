@@ -91,7 +91,9 @@ enum Sprites {
     }
 
     /// Procedural dirt tile, darkened like a Minecraft menu background.
-    static let dirtTile: NSImage = {
+    static let dirtTile = dirt(brightness: 0.3)
+
+    static func dirt(brightness: CGFloat) -> NSImage {
         let shades: [UInt32] = [0x866043, 0x6C4A30, 0x593D29, 0x9A7354, 0x4A3221, 0x79553A]
         var seed: UInt32 = 0x5EED
         func rand() -> UInt32 {
@@ -101,10 +103,10 @@ enum Sprites {
         let grid = (0..<256).map { _ in shades[Int(rand() % UInt32(shades.count))] }
         return PixelArt.image(width: 16, height: 16, scale: 4) { x, y in
             let c = NSColor(hex: grid[y * 16 + x])
-            return NSColor(srgbRed: c.redComponent * 0.3, green: c.greenComponent * 0.3,
-                           blue: c.blueComponent * 0.3, alpha: 1)
+            return NSColor(srgbRed: c.redComponent * brightness, green: c.greenComponent * brightness,
+                           blue: c.blueComponent * brightness, alpha: 1)
         }
-    }()
+    }
 }
 
 extension Image {

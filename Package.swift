@@ -11,7 +11,6 @@ let package = Package(
             dependencies: ["BookCore"],
             resources: [.process("Resources")]
         ),
-        .executableTarget(name: "IconGen"),
         .testTarget(name: "BookCoreTests", dependencies: ["BookCore"]),
     ]
 )

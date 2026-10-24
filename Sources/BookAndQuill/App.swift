@@ -38,6 +38,7 @@ struct BookAndQuillApp: App {
     @StateObject private var router = Router()
 
     init() {
+        IconExport.runIfRequested()
         MC.registerFont()
     }
 
