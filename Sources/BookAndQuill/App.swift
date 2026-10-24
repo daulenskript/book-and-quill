@@ -47,7 +47,10 @@ struct BookAndQuillApp: App {
                 .environmentObject(store)
                 .environmentObject(router)
                 .frame(minWidth: 900, minHeight: 680)
-                .onAppear { store.load() }
+                .onAppear {
+                    store.load()
+                    DebugSnapshot.applyInitialScreen(store: store, router: router)
+                }
         }
         .windowResizability(.contentMinSize)
         .commands {
